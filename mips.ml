@@ -85,7 +85,9 @@ let print_program p out_filename =
      Printf.fprintf out_file "%s\n" s;
   in
   add "\t.text";
+  add "\tmain:";
   List.iter (fun e -> string_instruction e |> add ) p.text  ;
+  add "\tend:\n\tli $v0, 10\n\tsyscall";
   add "\t.data";
   List.iter (fun e -> string_data e |> add ) p.data ;
   close_out out_file
