@@ -50,7 +50,7 @@ let string_arith = function
   | Div -> "div"
 
 let string_address = function
-  | Alab s ->  s
+  | Alab s ->  s (* Adress label *)
   | Areg (ofs, r) -> (string_of_int ofs)^"("^(string_register r)^")"
 
 
@@ -84,11 +84,13 @@ let print_program p out_filename =
   let add s =
      Printf.fprintf out_file "%s\n" s;
   in
-  add "\t.text";
-  add "\tmain:";
+  add ".text";
+  add "main:";
   List.iter (fun e -> string_instruction e |> add ) p.text  ;
-  add "\tend:\n\tli $v0, 10\n\tsyscall"; (* end of assembly file *)
-  add "\t.data";
+  add "end:\n
+  \tli $v0, 10\n
+  \tsyscall";
+  add ".data";
   List.iter (fun e -> string_data e |> add ) p.data ;
   close_out out_file
 
