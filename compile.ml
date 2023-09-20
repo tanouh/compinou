@@ -10,6 +10,15 @@ let gvars = Hashtbl.create 17
 (* Exception a lever quand une variable est utilisee sans etre definie *)
 exception VarUndef of string
 
+
+
+let cast_arith = function
+| Add -> Mips.Add
+| Sub -> Mips.Sub
+| Mul -> Mips.Mul
+| Div -> Mips.Div
+
+
 (* 
   Variables qu'on ne read pas dans la pile
    A0 pour charger les globales 
@@ -21,16 +30,14 @@ let compile_var e =
 
 (* Compilation d'une expression *)	
 let rec compile_expr = function
-  | Var x -> compile_var e 
+  | Cst k -> [Li (V0, k)]
+  | Var x -> compile_var x
   | Binop (op, a, b) -> match b with 
-     | Cst k -> (compile_expr a) @ [Arithi (op,V0,V0,k)]
-     | _ -> (compile_expr a) @ [Arithi (Sub, SP, SP, 4), Sw(V0, Areg(4,SP))] 
-     @ (compile_expr b) @ [Lw (A0, Areg(4,SP)); (Arith (op,V0,A0,V0)); Arithi(Add, SP, SP, 4)]
+     | Cst k -> (compile_expr a) @ [Arithi ( (cast_arith op),V0,V0,k)]
+     | _ -> (compile_expr a) @ [Arithi (Add, SP, SP, -4); Sw(V0, Areg(4,SP))] 
+     @ (compile_expr b) @ [Lw (A0, Areg(4,SP)); (Arith ((cast_arith op),V0,A0,V0)); Arithi(Add, SP, SP, 4)]
   | Letin (x, a, b) -> []
   | Call (f, arg) -> []
-
-let compile_binop (op, a, b) = 
-
 
 let compile_read x = [Li (V0,5); Syscall; Sw (V0, Alab x)]
 

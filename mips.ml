@@ -6,7 +6,7 @@ type address =
   | Alab of string
   | Areg of int * register
 
-type arith = Add | Sub | Mul | Div
+type arith  = Add | Sub | Mul | Div
 
 type instruction =
   | Move of register * register
