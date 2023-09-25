@@ -1,0 +1,2 @@
+read x
+print ( let y = 2 * x in let z = x + y ) + ( let x = 10 in x + x )

@@ -1,0 +1,4 @@
+read y
+print let x = 10 in let z = (x + y) + x in x + y + z
+print let x = 10 in (x+y) + x
+

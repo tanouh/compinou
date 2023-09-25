@@ -1,0 +1,2 @@
+read x
+print let x = x + 5 in x + x
