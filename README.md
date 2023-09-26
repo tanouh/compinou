@@ -1,4 +1,4 @@
-# compinou
+# compinou (Compilateur)
 
 *Kevin Garnier* ; 
 *Tania Mahandry*
@@ -12,8 +12,8 @@
 Pour garder l'encapsulation, à chaque entrée dans un nouveau bloc d'instructions (ex: une fonction) la map des variables locales est initialisée à vide.
 
 Chaque apparition d'une variable implique la vérification de son existence :
-* Soit dans les variables globales
 * Soit dans les variables locales du bloc actuel
+* Soit dans les variables globales
 * Sinon le programme renvoie une exception
 
 
@@ -26,5 +26,6 @@ Chaque apparition d'une variable implique la vérification de son existence :
 
 ## Conventions
 - Le résulat de compilation de chaque expression est stocké dans --$v0-- 
+- L'Argument des fonction est stocké dans --$a0--
 
 
