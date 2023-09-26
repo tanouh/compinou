@@ -1,0 +1,4 @@
+read x 
+read y 
+function f(t): (let z = 2 in t + x + y + z + 10)
+print f(y)

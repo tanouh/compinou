@@ -1,0 +1,4 @@
+read y
+function f(a):(a*a + 2*a + 1)
+print f(y)
+print y

@@ -27,8 +27,7 @@ let pop_tmp =
    sp_aux := !sp_aux - 1;
    [Arithi (Add, SP, SP, 4)]
 
-         
-
+      
         
 let cast_arith = function
   | Add -> Mips.Add
@@ -36,7 +35,7 @@ let cast_arith = function
   | Mul -> Mips.Mul
   | Div -> Mips.Div
 
-(* Retrouve la veleur depuis les variables locales. si elle n'est pas présente dans
+(* Retrouve la valeur depuis les variables locales. si elle n'est pas présente dans
    les varibales locales, essaie les variables globales. Si elle est introuvable,
    lance une exeception, sinon stocke le resultats dans $v0*)
 let compile_var locvars e =
