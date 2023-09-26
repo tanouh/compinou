@@ -1,16 +1,25 @@
 .text
 main:
 	li	$v0, 5
+	syscall
+	sw	$v0,x
+f:
 	add	$sp,$sp,-4
-	sw	$v0,4($sp)
-	lw	$v0,4($sp)
-	add	$sp,$sp,-4
-	sw	$v0,4($sp)
+	sw	$ra,4($sp)
 	lw	$v0,8($sp)
-	lw	$a0,4($sp)
-	add	$v0,$a0,$v0
+	add	$sp,$sp,-4
+	sw	$v0,8($sp)
+	li	$v0, 1
+	add	$v0,$v0,1
+	lw	$a0,8($sp)
 	add	$sp,$sp,4
+	j	end_f
+end_f:
+	lw	$ra,4($sp)
 	add	$sp,$sp,4
+	jr	$ra
+	lw	$v0,x
+	jal	f
 	move	$a0, $v0
 	li	$v0, 1
 	syscall
@@ -23,3 +32,4 @@ end:
 
   	syscall
 .data
+x: 	.word 0

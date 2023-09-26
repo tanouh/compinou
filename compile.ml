@@ -62,7 +62,8 @@ let rec compile_expr locvars = function
       in
       let locvars = StrMap.add x (StrMap.cardinal locvars + 1) locvars in
       l @ compile_expr locvars b @ [ Arithi (Add, SP, SP, 4) ]
-  | Call (f, arg) -> []
+  | Call (f, arg) -> (compile_expr StrMap.empty arg) @ [Jal f]
+
 
 let compile_read x = [ Li (V0, 5); Syscall; Sw (V0, Alab x) ]
 
@@ -70,6 +71,28 @@ let compile_print e =
   match e with
   | Cst k -> [ Arithi (Add, A0, A0, k) ]
   | _ -> compile_expr StrMap.empty e @ [ Move (A0, V0) ]
+
+
+  let compile_fun f arg exp =
+    let locvars = StrMap.empty in
+    let l = [Label f; Arithi (Add, SP, SP, -4); Sw (RA, Areg(4, SP))] in
+    sp_aux := !sp_aux + 1;
+    let locvars = StrMap.add arg (StrMap.cardinal locvars + 1) locvars in
+    let sp_x = StrMap.find arg locvars in
+    let l =
+      l
+      @ (compile_var locvars arg)
+      @ [Arithi (Add, SP, SP, -4); Sw (V0, Areg(4 * (StrMap.cardinal locvars - sp_x + !sp_aux + 1), SP))]
+      @ (compile_expr locvars exp)
+      @
+      [ Lw ( A0, Areg(4 * (StrMap.cardinal locvars - sp_x + !sp_aux + 1), SP))
+      ; Arithi (Add, SP, SP, 4)
+      ]
+      @ [J ("end_"^f); Endfun f; Lw (RA, Areg(4, SP)); Arithi (Add, SP, SP, 4); Jr RA ]
+    in
+    sp_aux := !sp_aux - 1;
+    l
+  
 
 (* Compilation d'une instruction *)
 let compile_instr = function
@@ -81,7 +104,7 @@ let compile_instr = function
       else (
         Hashtbl.add gvars x (Word (x, 0));
         compile_read x)
-  | Function (f, arg, exp) -> []
+  | Function (f, arg, exp) -> compile_fun f arg exp
 
 (* Compile le programme p et enregistre le code dans le fichier ofile *)
 let compile_program p ofile =

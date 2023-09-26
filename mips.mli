@@ -21,6 +21,7 @@ type instruction =
   | Syscall
   | Label of string
   | Comment of string
+  | Endfun of string
 
 type data = 
   | Asciiz of string * string

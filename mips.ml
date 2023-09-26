@@ -21,6 +21,7 @@ type instruction =
   | Syscall
   | Label of string
   | Comment of string
+  | Endfun of string
              
 type data = 
   | Asciiz of string * string
@@ -73,6 +74,7 @@ let string_instruction = function
   | Syscall -> "\tsyscall"
   | Comment s ->  "\t "^s
   | Label s ->  s^":"
+  | Endfun s -> "end_"^s^":"
 
 let string_data = function
   | Asciiz (l, s) -> 
