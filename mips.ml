@@ -22,6 +22,7 @@ type instruction =
   | Label of string
   | Comment of string
   | Endfun of string
+  | JEnd of string
              
 type data = 
   | Asciiz of string * string
@@ -75,6 +76,7 @@ let string_instruction = function
   | Comment s ->  "\t "^s
   | Label s ->  s^":"
   | Endfun s -> "end_"^s^":"
+  | JEnd s -> "\tj\tend_"^s
 
 let string_data = function
   | Asciiz (l, s) -> 

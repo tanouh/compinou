@@ -22,6 +22,7 @@ type instruction =
   | Label of string
   | Comment of string
   | Endfun of string
+  | JEnd of string
 
 type data = 
   | Asciiz of string * string
