@@ -12,7 +12,7 @@ f:
 	lw	$v0,4($sp)
 	add	$sp,$sp,-4
 	sw	$v0,4($sp)
-	lw	$v0,4($sp)
+	lw	$v0,8($sp)
 	lw	$a0,4($sp)
 	mul	$v0,$a0,$v0
 	add	$sp,$sp,4
@@ -21,7 +21,7 @@ f:
 	li	$v0, 2
 	add	$sp,$sp,-4
 	sw	$v0,4($sp)
-	lw	$v0,4($sp)
+	lw	$v0,12($sp)
 	lw	$a0,4($sp)
 	mul	$v0,$a0,$v0
 	add	$sp,$sp,4
@@ -37,13 +37,6 @@ end_f:
 	lw	$v0,y
 	move	$a0, $v0
 	jal	f
-	move	$a0, $v0
-	li	$v0, 1
-	syscall
-	li	$v0, 11
-	li	$a0, 10
-	syscall
-	lw	$v0,y
 	move	$a0, $v0
 	li	$v0, 1
 	syscall

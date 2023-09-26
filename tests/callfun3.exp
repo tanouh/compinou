@@ -1,3 +1,4 @@
 read x 
-function f(t) : ( t - x + (t + x)*3)
-print f(x)
+read y
+function f(t) : ((t + x)*3 + t - x )
+print f(y)

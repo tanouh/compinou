@@ -6,6 +6,9 @@ main:
 	li	$v0, 5
 	syscall
 	sw	$v0,y
+	li	$v0, 5
+	syscall
+	sw	$v0,z
 	j	end_f
 f:
 	add	$sp,$sp,-4
@@ -24,13 +27,13 @@ f:
 	add	$sp,$sp,4
 	add	$sp,$sp,-4
 	sw	$v0,4($sp)
-	lw	$v0,y
+	lw	$v0,8($sp)
 	lw	$a0,4($sp)
 	add	$v0,$a0,$v0
 	add	$sp,$sp,4
 	add	$sp,$sp,-4
 	sw	$v0,4($sp)
-	lw	$v0,4($sp)
+	lw	$v0,z
 	lw	$a0,4($sp)
 	add	$v0,$a0,$v0
 	add	$sp,$sp,4
@@ -56,5 +59,6 @@ end:
 
   	syscall
 .data
+z: 	.word 0
 y: 	.word 0
 x: 	.word 0

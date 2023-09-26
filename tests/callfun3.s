@@ -3,6 +3,9 @@ main:
 	li	$v0, 5
 	syscall
 	sw	$v0,x
+	li	$v0, 5
+	syscall
+	sw	$v0,y
 	j	end_f
 f:
 	add	$sp,$sp,-4
@@ -19,22 +22,22 @@ f:
 	mul	$v0,$v0,3
 	add	$sp,$sp,-4
 	sw	$v0,4($sp)
-	lw	$v0,4($sp)
+	lw	$v0,8($sp)
+	lw	$a0,4($sp)
+	add	$v0,$a0,$v0
+	add	$sp,$sp,4
 	add	$sp,$sp,-4
 	sw	$v0,4($sp)
 	lw	$v0,x
 	lw	$a0,4($sp)
 	sub	$v0,$a0,$v0
 	add	$sp,$sp,4
-	lw	$a0,4($sp)
-	add	$v0,$a0,$v0
-	add	$sp,$sp,4
 	add	$sp,$sp,4
 	lw	$ra,4($sp)
 	add	$sp,$sp,4
 	jr	$ra
 end_f:
-	lw	$v0,x
+	lw	$v0,y
 	move	$a0, $v0
 	jal	f
 	move	$a0, $v0
@@ -49,4 +52,5 @@ end:
 
   	syscall
 .data
+y: 	.word 0
 x: 	.word 0
