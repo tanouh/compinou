@@ -11,6 +11,12 @@
 
 Pour garder l'encapsulation, à chaque entrée dans un nouveau bloc d'instructions (ex: une fonction) la map des variables locales est initialisée à vide.
 
+Chaque apparition d'une variable implique la vérification de son existence :
+* Soit dans les variables globales
+* Soit dans les variables locales du bloc actuel
+* Sinon le programme renvoie une exception
+
+
 ## Gestion de la pile
 - Nous utilisons une référence ``sp_aux`` qui sert à sauvegarder l'avancé de --$sp-- quand on utilise la pile pour stocker des résultats temporaires.
 
