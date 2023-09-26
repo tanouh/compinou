@@ -14,22 +14,6 @@ let sp_aux = ref 0
 (* Exception a lever quand une variable est utilisee sans etre definie *)
 exception VarUndef of string
 
-let push_var reg locvars x = 
-  let l = [ Arithi (Add, SP, SP, -4); Sw (reg, Areg (4, SP)) ] in
-  let locvars = StrMap.add x (StrMap.cardinal locvars + 1) locvars in
-  l, locvars 
-
-let push_tmp = 
-  sp_aux := !sp_aux + 1;
-  [ Arithi (Add, SP, SP, -4); Sw (V0, Areg (4, SP)) ]
-
-let pop_tmp = 
-   sp_aux := !sp_aux - 1;
-   [Arithi (Add, SP, SP, 4)]
-
-         
-
-        
 let cast_arith = function
   | Add -> Mips.Add
   | Sub -> Mips.Sub
@@ -56,28 +40,29 @@ let rec compile_expr locvars = function
       match b with
       | Cst k -> compile_expr locvars a @ [ Arithi (cast_arith op, V0, V0, k) ]
       | _ ->
-            let l = (compile_expr locvars a)
-            @ push_tmp in
-            sp_aux := !sp_aux + 1;
-
-           let l =  l @ (compile_expr locvars b)
+          let l =
+            compile_expr locvars a
+            @ [ Arithi (Add, SP, SP, -4); Sw (V0, Areg (4, SP)) ]
+          in
+          sp_aux := !sp_aux + 1;
+          let l =
+            l @ compile_expr locvars b
             @ [
                 Lw (A0, Areg (4, SP));
-                Arith (cast_arith op, V0, A0, V0)
-            ]
-            @
-   [Arithi (Add, SP, SP, 4)]
-           in sp_aux := !sp_aux - 1;
-           l
-  )
-
-   | Letin (x, a, b) ->
+                Arith (cast_arith op, V0, A0, V0);
+                Arithi (Add, SP, SP, 4);
+              ]
+          in
+          sp_aux := !sp_aux - 1;
+          l)
+  | Letin (x, a, b) ->
       let l =
         compile_expr locvars a
-      in let l',locvars = push_var V0 locvars x in
-      l @ l' @ compile_expr locvars b @ [ Arithi (Add, SP, SP, 4) ]
-  | Call (f, arg) -> (compile_expr StrMap.empty arg) @ [ Move(A0, V0) ; Jal f]
-
+        @ [ Arithi (Add, SP, SP, -4); Sw (V0, Areg (4, SP)) ]
+      in
+      let locvars = StrMap.add x (StrMap.cardinal locvars + 1) locvars in
+      l @ compile_expr locvars b @ [ Arithi (Add, SP, SP, 4) ]
+  | Call (f, arg) -> []
 
 let compile_read x = [ Li (V0, 5); Syscall; Sw (V0, Alab x) ]
 
@@ -85,20 +70,6 @@ let compile_print e =
   match e with
   | Cst k -> [ Arithi (Add, A0, A0, k) ]
   | _ -> compile_expr StrMap.empty e @ [ Move (A0, V0) ]
-
-
-  let compile_fun f arg exp =
-    let l, locvars = push_var A0 StrMap.empty arg in
-    let l =
-      [Label f; Arithi (Add, SP, SP, -4); Sw (RA, Areg(4, SP)); ] @ l
-      @ (compile_expr locvars exp)
-      @ [
-              Arithi (Add, SP, SP, 4); Lw (RA, Areg(4, SP)); Arithi (Add, SP, SP, 4); Jr RA;
-          Endfun f
-      ]
-    in
-    [JEnd f] @ l
-  
 
 (* Compilation d'une instruction *)
 let compile_instr = function
@@ -110,11 +81,10 @@ let compile_instr = function
       else (
         Hashtbl.add gvars x (Word (x, 0));
         compile_read x)
-  | Function (f, arg, exp) -> compile_fun f arg exp
+  | Function (f, arg, exp) -> []
 
 (* Compile le programme p et enregistre le code dans le fichier ofile *)
 let compile_program p ofile =
   let code = List.map compile_instr p |> List.concat in
   let p = { text = code; data = List.of_seq (Hashtbl.to_seq_values gvars) } in
   Mips.print_program p ofile
-
